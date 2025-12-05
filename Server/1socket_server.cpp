@@ -29,7 +29,7 @@
 #include "app_list_start_stop.h"
 
 std::string handleCommand(const std::string &cmd) {
-    // ===== PROCESS COMMANDS =====
+    // ===== PROCESS COMMANDS ===== (chuy phần này sang code để chạy demo)
     //if (cmd == "process_list") return listProcesses();
     //if (cmd.find("start_process ") == 0) {
     //    std::string proc = cmd.substr(13);
@@ -80,7 +80,6 @@ std::string handleCommand(const std::string &cmd) {
     //    return "✓ Restart initiated";
     //}
     
-    return "✗ Unknown command";
 }
 
 
