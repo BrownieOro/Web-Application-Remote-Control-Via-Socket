@@ -41,15 +41,15 @@ std::string handleCommand(const std::string &cmd) {
     //}
     
     // ===== APP COMMANDS =====
-    //if (cmd == "list_apps") return listApps();
-    //if (cmd.find("start_app ") == 0) {
-    //    std::string app = cmd.substr(10);
-    //    return startApp(app);
-    //}
-    //if (cmd.find("stop_app ") == 0) {
-    //    std::string app = cmd.substr(9);
-    //    return stopApp(app);
-    //}
+    if (cmd == "list_apps") return listApps();
+    if (cmd.find("start_app ") == 0) {
+       std::string app = cmd.substr(10);
+       return startApp(app);
+    }
+    if (cmd.find("stop_app ") == 0) {
+       std::string app = cmd.substr(9);
+       return stopApp(app);
+    }
     
     // ===== SCREENSHOT =====
     //if (cmd == "screenshot") return takeScreenshot();
@@ -80,6 +80,7 @@ std::string handleCommand(const std::string &cmd) {
     //    return "✓ Restart initiated";
     //}
     
+    return "✓ Command received: " + cmd;
 }
 
 

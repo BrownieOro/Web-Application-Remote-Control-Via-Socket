@@ -441,9 +441,6 @@
             <div class="control-card">
                 <h3><span class="icon">💻</span> System Info</h3>
                 <div class="control-buttons">
-                    <button class="btn-control" onclick="sendCmd('process_list')">
-                        📋 Process List
-                    </button>
                     <button class="btn-control" onclick="sendCmd('system_info')">
                         ℹ️ System Information
                     </button>
@@ -521,12 +518,34 @@
                     <button class="btn-control" onclick="sendCmd('list_apps')">
                         📋 List Applications
                     </button>
-                    <button class="btn-control" onclick="sendCmd('start_app')">
-                        ▶️ Start App
+                    <div style="display: flex; gap: 8px; margin-top: 10px;">
+                        <input type="text" id="appName" placeholder="notepad.exe" style="flex: 1; padding: 10px; border: 1px solid rgba(255,255,255,0.3); border-radius: 5px; background: rgba(255,255,255,0.1); color: white; font-size: 0.85em;">
+                        <button class="btn-control" style="flex: 1; margin: 0; padding: 10px;" onclick="startApplication()">
+                            ▶️ Start
+                        </button>
+                        <button class="btn-control" style="flex: 1; margin: 0; padding: 10px;" onclick="stopApplication()">
+                            ⏹️ Stop
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Process Management Card -->
+            <div class="control-card">
+                <h3><span class="icon">⚙️</span> Process</h3>
+                <div class="control-buttons">
+                    <button class="btn-control" onclick="sendCmd('process_list')">
+                        📋 Process List
                     </button>
-                    <button class="btn-control" onclick="sendCmd('stop_app')">
-                        ⏹️ Stop App
-                    </button>
+                    <div style="display: flex; gap: 8px; margin-top: 10px;">
+                        <input type="text" id="processName" placeholder="chrome.exe" style="flex: 1; padding: 10px; border: 1px solid rgba(255,255,255,0.3); border-radius: 5px; background: rgba(255,255,255,0.1); color: white; font-size: 0.85em;">
+                        <button class="btn-control" style="flex: 1; margin: 0; padding: 10px;" onclick="startProcess()">
+                            ▶️ Start
+                        </button>
+                        <button class="btn-control" style="flex: 1; margin: 0; padding: 10px;" onclick="stopProcess()">
+                            ⏹️ Stop
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -640,6 +659,42 @@
             } else {
                 showToast('⚠️ Not connected!');
             }
+        }
+
+        function startApplication() {
+            const appName = document.getElementById('appName').value.trim();
+            if (!appName) {
+                showToast('⚠️ Please enter app name!');
+                return;
+            }
+            sendCmd('start_app ' + appName);
+        }
+
+        function stopApplication() {
+            const appName = document.getElementById('appName').value.trim();
+            if (!appName) {
+                showToast('⚠️ Please enter app name!');
+                return;
+            }
+            sendCmd('stop_app ' + appName);
+        }
+
+        function startProcess() {
+            const procName = document.getElementById('processName').value.trim();
+            if (!procName) {
+                showToast('⚠️ Please enter process name!');
+                return;
+            }
+            sendCmd('start_process ' + procName);
+        }
+
+        function stopProcess() {
+            const procName = document.getElementById('processName').value.trim();
+            if (!procName) {
+                showToast('⚠️ Please enter process name!');
+                return;
+            }
+            sendCmd('stop_process ' + procName);
         }
 
         function switchTab(tabName) {

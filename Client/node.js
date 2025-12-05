@@ -3,6 +3,10 @@ const net = require('net');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const { spawn } = require('child_process');
+
+// Auto start C++ server
+spawn(path.join(__dirname, '..', 'Server', '1socket_server.exe'), { detached: true, stdio: 'ignore' });
 
 // ===== HTTP SERVER =====
 const httpServer = http.createServer((req, res) => {
